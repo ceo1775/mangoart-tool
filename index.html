@@ -3,525 +3,167 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>망고아트 마케팅 콘텐츠 자동 생성기 (업무용)</title>
+    <title>망고아트 AI 마케팅 콘텐츠 스튜디오</title>
     <style>
       :root {
         --mango-50: #fff9e9;
-        --mango-100: #ffefbf;
         --mango-200: #ffe08a;
-        --mango-300: #ffd35d;
-        --mango-400: #ffb938;
         --mango-500: #ff9f1a;
         --mango-700: #c56c00;
         --text-main: #2f2411;
         --text-sub: #6b5325;
         --border: #f0d8a7;
         --card: #fffef9;
-        --danger: #b13c14;
       }
-
       * { box-sizing: border-box; }
-      body {
-        margin: 0;
-        font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
-        color: var(--text-main);
-        background: linear-gradient(180deg, var(--mango-50), #fff 30%);
-      }
-
-      .wrap {
-        max-width: 1120px;
-        margin: 0 auto;
-        padding: 24px 16px 56px;
-      }
-
-      h1 { margin: 0 0 8px; color: #8a4e00; font-size: clamp(1.35rem, 3vw, 2rem); }
+      body { margin: 0; font-family: 'Pretendard', 'Noto Sans KR', sans-serif; color: var(--text-main); background: linear-gradient(180deg, var(--mango-50), #fff 35%); }
+      .wrap { max-width: 1160px; margin: 0 auto; padding: 20px 14px 50px; }
+      .card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 16px; margin-bottom: 12px; box-shadow: 0 6px 18px rgba(255, 185, 56, 0.12); }
+      h1 { margin: 0 0 6px; color: #8a4e00; }
       .desc { margin: 0; color: var(--text-sub); }
-
-      .flow {
-        display: grid;
-        grid-template-columns: repeat(4, minmax(0, 1fr));
-        gap: 10px;
-        margin: 16px 0;
-      }
-      .flowStep {
-        background: #fff7df;
-        border: 1px solid var(--border);
-        border-radius: 999px;
-        padding: 8px 12px;
-        font-weight: 700;
-        font-size: 13px;
-        text-align: center;
-      }
-
-      .card {
-        background: var(--card);
-        border: 1px solid var(--border);
-        border-radius: 14px;
-        padding: 16px;
-        margin-bottom: 14px;
-        box-shadow: 0 6px 18px rgba(255, 185, 56, 0.12);
-      }
-
-      .formGrid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
-      label { display: flex; flex-direction: column; gap: 6px; font-weight: 700; font-size: 14px; }
-      input {
-        width: 100%; padding: 11px; border: 1px solid #efc97a; border-radius: 10px; font-size: 14px; background: #fff;
-      }
-      select {
-        width: 100%; padding: 11px; border: 1px solid #efc97a; border-radius: 10px; font-size: 14px; background: #fff;
-      }
-      .full { grid-column: 1 / -1; }
-
-      .actions { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; grid-column: 1 / -1; }
-      .sampleActions {
-        display: grid;
-        grid-template-columns: repeat(5, minmax(0, 1fr));
-        gap: 8px;
-        margin-top: 12px;
-      }
-      button {
-        border: 0; border-radius: 10px; padding: 11px; font-size: 14px; font-weight: 800; cursor: pointer;
-      }
-      .primary { color: #fff; background: linear-gradient(120deg, var(--mango-500), var(--mango-400)); }
-      .ghost { color: #8a4e00; background: #fff8e6; border: 1px solid #efc97a; }
-      .danger { color: #fff; background: var(--danger); }
-      .sampleBtn {
-        background: #ffd35d;
-        color: #6e3d00;
-        border: 1px solid #efc97a;
-      }
-
-      .cardHeader { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 10px; }
-      h2,h3 { margin: 0; }
-      .copyBtn {
-        border: 1px solid #efc97a; border-radius: 8px; padding: 7px 10px; background: #fff9ea; color: #8a4e00; font-weight: 700; cursor: pointer;
-      }
-
-      pre { margin: 0; white-space: pre-wrap; line-height: 1.65; font-family: inherit; }
-      ol { margin: 0 0 0 20px; padding: 0; line-height: 1.65; }
-
-      .savedGrid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
-      .savedItem {
-        border: 1px solid var(--border);
-        background: #fffdf4;
-        border-radius: 12px;
-        padding: 12px;
-      }
-      .savedMeta { font-size: 13px; color: var(--text-sub); margin: 0 0 8px; line-height: 1.6; }
-      .savedBtns { display: flex; gap: 8px; }
-      .savedBtns button { flex: 1; padding: 8px; font-size: 13px; }
-      .savedStyleRow { display: flex; gap: 8px; margin-top: 8px; }
-
-      .empty { margin: 0; color: #8f7a54; font-size: 14px; }
-
-      .toast {
-        position: fixed; right: 16px; bottom: 16px; background: #3f2b06; color: #fff; padding: 10px 14px; border-radius: 8px;
-        opacity: 0; transform: translateY(8px); transition: 0.2s; pointer-events: none;
-      }
-      .toast.show { opacity: 1; transform: translateY(0); }
-
-      @media (max-width: 900px) {
-        .actions { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-        .sampleActions { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-      }
-      @media (max-width: 768px) {
-        .formGrid, .savedGrid, .flow { grid-template-columns: 1fr; }
-        .sampleActions { grid-template-columns: 1fr; }
-      }
+      .flow { display:grid; grid-template-columns: repeat(5,minmax(0,1fr)); gap:8px; margin-top:14px; }
+      .flowStep { background:#fff7df; border:1px solid var(--border); border-radius:999px; padding:8px; font-size:13px; text-align:center; font-weight:700; }
+      .grid { display:grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap:10px; }
+      label { display:flex; flex-direction:column; gap:6px; font-size:13px; font-weight:700; }
+      input,select,textarea { width:100%; padding:10px; border:1px solid #efc97a; border-radius:10px; font-size:14px; background:#fff; }
+      textarea { min-height:96px; resize:vertical; }
+      .full { grid-column:1/-1; }
+      .actions { display:grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap:8px; grid-column:1/-1; }
+      button { border:0; border-radius:10px; padding:10px; font-weight:800; cursor:pointer; }
+      .primary { color:#fff; background:linear-gradient(120deg,var(--mango-500),#ffb938); }
+      .ghost { color:#8a4e00; background:#fff8e6; border:1px solid #efc97a; }
+      .cardHeader { display:flex; justify-content:space-between; align-items:center; gap:8px; margin-bottom:8px; }
+      .copyBtn { border:1px solid #efc97a; background:#fff9ea; color:#8a4e00; padding:6px 9px; border-radius:8px; }
+      pre { margin:0; white-space:pre-wrap; line-height:1.6; }
+      .thumb { max-width:200px; border-radius:10px; border:1px solid var(--border); }
+      .savedGrid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; }
+      .savedItem { border:1px solid var(--border); background:#fffdf4; border-radius:12px; padding:10px; }
+      .toast { position:fixed; right:16px; bottom:16px; background:#3f2b06; color:#fff; padding:10px 14px; border-radius:8px; opacity:0; transform:translateY(8px); transition:.2s; pointer-events:none; }
+      .toast.show { opacity:1; transform:translateY(0); }
+      @media (max-width: 900px) { .actions,.flow { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+      @media (max-width: 768px) { .grid,.savedGrid,.flow { grid-template-columns:1fr; } }
     </style>
   </head>
   <body>
     <main class="wrap">
-      <header class="card">
-        <h1>망고아트 마케팅 콘텐츠 자동 생성기 (업무용)</h1>
-        <p class="desc">고객 상담 정보까지 반영해 실무에 바로 올릴 콘텐츠를 생성하고 저장하세요.</p>
-        <div class="flow" aria-label="작업 흐름">
-          <div class="flowStep">오늘 작업</div>
-          <div class="flowStep">콘텐츠 생성</div>
-          <div class="flowStep">저장</div>
-          <div class="flowStep">업로드</div>
+      <section class="card">
+        <h1>망고아트 AI 마케팅 콘텐츠 스튜디오</h1>
+        <p class="desc">이미지 업로드 → 텍스트 추출(OCR) → GPT 콘텐츠 생성 → 인스타/유튜브/블로그 포맷 → 저장/재활용 + 이미지/영상 생성 프롬프트 자동화.</p>
+        <div class="flow">
+          <div class="flowStep">1. 이미지 업로드</div><div class="flowStep">2. OCR 분석</div><div class="flowStep">3. GPT 생성</div><div class="flowStep">4. 채널 포맷</div><div class="flowStep">5. 저장/재활용</div>
         </div>
-        <div class="sampleActions" aria-label="샘플 자동 입력 버튼">
-          <button class="sampleBtn" type="button" data-sample-key="cafePop">카페 POP 샘플</button>
-          <button class="sampleBtn" type="button" data-sample-key="deliverySticker">배달 스티커 샘플</button>
-          <button class="sampleBtn" type="button" data-sample-key="corpBanner">기업 배너 샘플</button>
-          <button class="sampleBtn" type="button" data-sample-key="hospitalNotice">병원 안내문 샘플</button>
-          <button class="sampleBtn" type="button" data-sample-key="photoCard">포토카드 샘플</button>
-        </div>
-      </header>
+      </section>
 
-      <form id="contentForm" class="card formGrid">
-        <label>고객명<input name="customerName" placeholder="예: 영통점 홍길동 대표" /></label>
-        <label>제작 품목<input name="item" placeholder="예: 실사출력 배너" /></label>
-        <label>업종<input name="industry" placeholder="예: 카페, 학원, 피부샵" /></label>
-        <label>지역<input name="region" placeholder="예: 수원 영통" /></label>
-        <label>사용 목적<input name="usagePurpose" placeholder="예: 오픈 프로모션 문의 전환" /></label>
-        <label>문의 전화번호<input name="phone" placeholder="예: 010-1234-5678" /></label>
-        <label class="full">고객 문제<input name="customerProblem" placeholder="예: 방문은 있는데 문의 전환이 낮음" /></label>
-        <label class="full">제작 내용<input name="productionDetail" placeholder="예: 매장 동선 맞춤 POP/배너 세트 제작" /></label>
-        <label class="full">강조 포인트<input name="highlightPoint" placeholder="예: 3초 시선 고정 헤드카피" /></label>
-        <label class="full">카카오채널 문구<input name="kakaoChannel" placeholder="예: 카카오채널 @망고아트" /></label>
-        <label class="full">생성 스타일
-          <select name="contentStyle">
-            <option value="default">기본형</option>
-            <option value="sales">강한 영업형</option>
-            <option value="insta">인스타형</option>
-            <option value="blog">블로그형</option>
-            <option value="ad">광고형</option>
-          </select>
+      <form id="contentForm" class="card grid">
+        <label class="full">이미지 업로드<input type="file" id="imageInput" accept="image/*" /></label>
+        <label>OCR 공급자
+          <select name="ocrProvider"><option value="vision">Google Vision</option><option value="rekognition">AWS Rekognition</option></select>
         </label>
+        <label>OpenAI API Key<input name="openaiApiKey" type="password" placeholder="sk-..." /></label>
+        <label>Google Vision API Key<input name="googleApiKey" type="password" placeholder="선택 사항" /></label>
+        <label>AWS Access Key<input name="awsAccessKey" type="password" placeholder="선택 사항" /></label>
+        <label>AWS Secret Key<input name="awsSecretKey" type="password" placeholder="선택 사항" /></label>
+        <label>브랜드/상품명<input name="brand" placeholder="예: 망고아트" /></label>
+        <label>업종<input name="industry" placeholder="예: 카페" /></label>
+        <label>목표 고객<input name="target" placeholder="예: 20~30대 직장인" /></label>
+        <label>캠페인 목표<input name="goal" placeholder="예: 문의 전환" /></label>
+        <label class="full">추가 지시사항<textarea name="extraInstruction" placeholder="톤, 금지어, CTA 등"></textarea></label>
+        <label class="full">OCR 추출 텍스트(수정 가능)<textarea id="ocrText" name="ocrText" placeholder="이미지 분석 결과가 여기에 자동 반영됩니다."></textarea></label>
 
         <div class="actions">
+          <button class="ghost" type="button" id="analyzeBtn">OCR 분석</button>
           <button class="primary" type="submit">콘텐츠 생성</button>
-          <button class="ghost" id="copyAllBtn" type="button">전체 복사</button>
-          <button class="ghost" id="saveBtn" type="button">저장하기</button>
-          <button class="ghost" id="resetBtn" type="button">입력 초기화</button>
+          <button class="ghost" type="button" id="saveBtn">저장하기</button>
+          <button class="ghost" type="button" id="copyAllBtn">전체 복사</button>
         </div>
       </form>
 
+      <section id="preview" class="card"></section>
       <section id="results"></section>
-
-      <section class="card">
-        <div class="cardHeader">
-          <h2>저장된 작업 사례</h2>
-          <button id="clearSavedBtn" class="danger" type="button">저장 목록 전체 삭제</button>
-        </div>
-        <div id="savedList" class="savedGrid"></div>
-      </section>
+      <section class="card"><div class="cardHeader"><h2>저장된 자산</h2><button id="clearSavedBtn" class="ghost" type="button">전체 삭제</button></div><div id="savedList" class="savedGrid"></div></section>
     </main>
-
     <div id="toast" class="toast"></div>
 
     <script>
-      const STORAGE_KEY = 'mangoart_saved_jobs_v2';
-      let currentContent = null;
+      const STORAGE_KEY = 'mangoart_ai_assets_v1';
+      let imageBase64 = ''; let currentContent = null;
+      const $ = (id) => document.getElementById(id);
+      const toast = (msg) => { const t=$('toast'); t.textContent=msg; t.classList.add('show'); clearTimeout(toast.timer); toast.timer=setTimeout(()=>t.classList.remove('show'),1200); };
 
-      const defaults = {
-        customerName: '고객사 담당자', item: '맞춤 제작물', industry: '일반 업종', region: '우리 지역',
-        usagePurpose: '상담 전환 확대', phone: '010-0000-0000', customerProblem: '고객 유입이 정체된 상황',
-        productionDetail: '브랜드 맞춤형 디자인 제작', highlightPoint: '전환을 만드는 핵심 포인트 반영', kakaoChannel: '카카오채널 @망고아트',
-        contentStyle: 'default'
-      };
-      const sampleDataMap = {
-        cafePop: {
-          item: '카페 메뉴 POP', industry: '카페', customerProblem: '메뉴가 눈에 잘 안 보이고 주문 유도가 약함',
-          productionDetail: 'A3 메뉴판 디자인 및 출력 제작', highlightPoint: '한눈에 보이는 메뉴 구성 + 매장 분위기 맞춤 디자인', region: '파주'
-        },
-        deliverySticker: {
-          item: '배달 포장 스티커', industry: '음식점', customerProblem: '브랜드 인식 부족',
-          productionDetail: '로고 스티커 제작', highlightPoint: '포장 시 자연스럽게 브랜드 노출', region: '운정'
-        },
-        corpBanner: {
-          item: '홍보 배너', industry: '기업', customerProblem: '전시에서 눈에 띄지 않음',
-          productionDetail: 'X배너 디자인 및 출력', highlightPoint: '시선 집중 + 메시지 전달력', region: '일산'
-        },
-        hospitalNotice: {
-          item: '안내 POP', industry: '병원', customerProblem: '안내가 명확하지 않음',
-          productionDetail: '진료 안내 POP 제작', highlightPoint: '신뢰감 + 가독성', region: '파주'
-        },
-        photoCard: {
-          item: '포토카드', industry: '개인', customerProblem: '특별한 굿즈 제작',
-          productionDetail: '포토카드 디자인 및 인쇄', highlightPoint: '감성 + 소장 가치', region: '서울'
+      $('imageInput').addEventListener('change', (e) => {
+        const file = e.target.files[0]; if (!file) return;
+        const reader = new FileReader();
+        reader.onload = () => { imageBase64 = String(reader.result).split(',')[1] || ''; $('preview').innerHTML = `<h3>업로드 미리보기</h3><img class="thumb" src="${reader.result}" alt="업로드 이미지"/>`; };
+        reader.readAsDataURL(file);
+      });
+
+      async function runOcr(provider, form) {
+        if (!imageBase64) throw new Error('이미지를 먼저 업로드해 주세요.');
+        if (provider === 'vision') {
+          if (!form.googleApiKey) throw new Error('Google Vision API Key를 입력해 주세요.');
+          const res = await fetch(`https://vision.googleapis.com/v1/images:annotate?key=${form.googleApiKey}`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({requests:[{image:{content:imageBase64},features:[{type:'TEXT_DETECTION'}]}]}) });
+          const data = await res.json();
+          return data.responses?.[0]?.fullTextAnnotation?.text || '텍스트 미검출';
         }
-      };
-
-      function normalize(form) {
-        return Object.fromEntries(Object.entries(defaults).map(([k, v]) => [k, (form[k] || '').trim() || v]));
+        throw new Error('AWS Rekognition은 브라우저 직접 호출 제한으로 데모에서는 미지원입니다. Google Vision을 사용해 주세요.');
       }
 
-      function nowString() {
-        const d = new Date();
-        const p = (n) => String(n).padStart(2, '0');
-        return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}`;
-      }
-
-      function buildContent(form) {
-        const d = normalize(form);
-        const styleTone = d.contentStyle;
-        const tagRegion = d.region.replace(/\s+/g, '');
-        const tagIndustry = d.industry.replace(/\s+/g, '');
-        const industryText = d.industry.toLowerCase();
-
-        const styleMap = [
-          {
-            type: 'cafe_food',
-            keywords: ['카페', '음식점', '식당', '레스토랑', '호프', '베이커리', '디저트'],
-            blogTitleSeeds: [
-              '메뉴판 하나 바꿨는데 주문이 달라집니다',
-              '손님 시선이 머무는 순간, 주문 전환이 시작됩니다',
-              '매장 분위기와 매출을 동시에 올리는 진짜 방법'
-            ],
-            problemLead: '손님은 있는데 매출이 안 나오는 이유, 대부분 첫 화면에서 주문 포인트를 못 잡아서입니다.',
-            valueLead: '메뉴판 하나 바꿨는데 주문 속도가 달라지고, 체류 손님이 바로 주문으로 넘어가게 만들었습니다.',
-            ctaLead: '지금 매장 상황 기준으로 제작 방향 바로 잡아드립니다.'
-          },
-          {
-            type: 'clinic_beauty',
-            keywords: ['병원', '피부샵', '피부', '미용', '의원', '성형', '왁싱', '네일', '헤어', '뷰티'],
-            blogTitleSeeds: [
-              '첫 방문 상담 전환율을 바꾸는 핵심입니다',
-              '첫인상 3초가 신뢰와 예약 전환을 결정합니다',
-              '상담 전 신뢰를 만드는 콘텐츠 구조, 이렇게 설계합니다'
-            ],
-            problemLead: '이거 안 바꾸면 계속 예약 놓칩니다. 첫인상에서 신뢰가 안 잡히면 상담은 바로 이탈됩니다.',
-            valueLead: '상담 문구와 시각 포인트를 바꾸자마자 예약 문의 속도가 달라졌습니다.',
-            ctaLead: '지금 매장 상황 기준으로 제작 방향 바로 잡아드립니다.'
-          },
-          {
-            type: 'corp_expo_pr',
-            keywords: ['기업', '전시', '홍보', '박람회', '브랜드', 'b2b', '컨퍼런스'],
-            blogTitleSeeds: [
-              '전시에서 고객이 멈추는 이유는 따로 있습니다',
-              '브랜드 전달력은 디자인이 아니라 구조에서 갈립니다',
-              '홍보 효율을 높이는 전시 콘텐츠, 결과로 증명합니다'
-            ],
-            problemLead: '부스는 붐비는데 리드가 안 남는 이유, 메시지가 약해서 고객이 바로 지나치기 때문입니다.',
-            valueLead: '핵심 문구만 바꿔도 체류 시간이 늘고, 명함 수집과 후속 문의가 눈에 띄게 늘었습니다.',
-            ctaLead: '지금 매장 상황 기준으로 제작 방향 바로 잡아드립니다.'
-          }
-        ];
-
-        const selectedStyle = styleMap.find((group) => group.keywords.some((kw) => industryText.includes(kw))) || {
-          type: 'default',
-          blogTitleSeeds: [
-            '고객 반응을 바꾸는 매장 콘텐츠의 핵심',
-            '문의 전환을 높이는 실전 제작 방식',
-            '디자인만 예쁜 콘텐츠와 결과 나는 콘텐츠의 차이'
-          ],
-          problemLead: '손님은 보이는데 문의가 안 늘면, 지금 쓰는 문구와 제작물이 매출을 막고 있는 겁니다.',
-          valueLead: '한 줄 카피와 노출 위치만 바꿨는데 문의 반응이 바로 올라오게 설계했습니다.',
-          ctaLead: '지금 매장 상황 기준으로 제작 방향 바로 잡아드립니다.'
-        };
-
-        const blogTitles = [
-          `${d.region} ${d.industry} ${selectedStyle.blogTitleSeeds[0]}`,
-          `${d.region} ${d.industry} ${selectedStyle.blogTitleSeeds[1]}`,
-          `${d.region} ${d.industry} ${selectedStyle.blogTitleSeeds[2]}`
-        ];
-
-        const styleTextMap = {
-          default: { lead: '실무에서 바로 쓰는 톤으로 정리했습니다. ', valueHook: selectedStyle.valueLead, cta: selectedStyle.ctaLead },
-          sales: { lead: '지금 안 바꾸면 경쟁사에 고객을 넘기는 겁니다. 이번 달 매출 격차는 여기서 시작됩니다. ', valueHook: '지체 없이 실행 가능한 구조로 바꿔 문의를 바로 당겨왔습니다.', cta: '오늘 바로 실행 가능하게 빠르게 견적/방향 제시해드립니다.' },
-          insta: { lead: '한 줄 요약: 시선 잡고 문의까지 바로 연결. ', valueHook: '짧은 카피 + 강한 포인트로 저장/공유/문의 흐름을 만들었습니다.', cta: 'DM/카카오로 바로 시작하세요.' },
-          blog: { lead: '아래는 실제 현장 기준으로 문제-해결-성과 흐름을 자세히 정리한 케이스입니다. ', valueHook: '작업 배경부터 적용 포인트까지 단계별로 설계해 재현 가능한 결과를 만들었습니다.', cta: '상세 기획부터 제작/출력까지 원스톱으로 연결해드립니다.' },
-          ad: { lead: '짧게, 강하게, 바로 전환. 지금 필요한 건 설명이 아니라 행동입니다. ', valueHook: '보는 즉시 이해되는 메시지로 즉시 문의를 유도했습니다.', cta: '문의 한 번으로 바로 실행: 031-901-5231' }
-        };
-        const styleConfig = styleTextMap[styleTone] || styleTextMap.default;
-
-        const blogBody = `${styleConfig.lead}${selectedStyle.problemLead} “${d.customerProblem}”을 그대로 두면 다음 달도 결과는 같습니다.\n\n${d.customerName}님 현장도 같았습니다. ${d.region} ${d.industry}에서 ${d.item}를 갈아엎고 전환 동선부터 다시 잡았습니다.\n\n디자인 + 제작 한 번에 진행으로 시간 끌지 않고 바로 실행했습니다. ${d.productionDetail} 기준으로 문구·레이아웃·노출 위치를 바꿨고, ${d.highlightPoint}를 첫 시선 자리에 꽂았습니다.\n\n${styleConfig.valueHook} 결과적으로 문의 진입이 빨라지고 상담 전환까지 끊기지 않게 만들었습니다.\n\n${styleConfig.cta} 디자인 + 제작 한 번에 진행, 문의: 031-901-5231. ${d.kakaoChannel}로 업종/제작물만 보내주시면 바로 시작합니다.`;
-
-        const instagramPost = `손님은 있는데 문의가 안 늘면, 지금 콘텐츠가 문제입니다.\n\n${d.region} ${d.industry}에서 ${d.item} 구성 바꾸자\n${styleConfig.valueHook}\n\n디자인 + 제작 한 번에 진행으로 ${d.highlightPoint}까지 바로 반영했습니다.\n지금 미루면 이번 주 손님도 놓칩니다.\n\n문의: 031-901-5231\n💬 ${d.kakaoChannel} (업종/제작물만 보내주세요)\n\n#망고아트 #${tagRegion} #${tagIndustry} #콘텐츠제작 #매출전환`;
-
-        const reelsScript = `오프닝(자막): "이거 안 바꾸면 계속 손님 놓칩니다"\n\n장면1(현장): ${d.region} ${d.industry} 현장 컷\n내레이션: "${selectedStyle.problemLead}"\n\n장면2(제작): ${d.item} 제작 디테일 컷\n내레이션: "디자인 + 제작 한 번에 진행으로 ${d.productionDetail} 바로 반영했습니다."\n\n장면3(핵심): before/after + 강조 자막\n내레이션: "핵심은 ${d.highlightPoint}. ${styleConfig.valueHook}"\n\n클로징(CTA): "지금 매장 상황 기준으로 바로 맞춰드립니다. 문의: 031-901-5231 / ${d.kakaoChannel}"`;
-
-        const shortsTitles = [
-          `이 메뉴판 하나 바꿨는데 매출이 달라졌습니다`,
-          `${d.customerProblem}, 이 한 줄 바꾸자 반응이 달라졌습니다`,
-          `${d.region} ${d.industry} 사장님이 바로 적용한 ${d.item} 전환 공식`,
-          `손님은 있는데 왜 안 팔릴까? ${d.highlightPoint}가 답입니다`,
-          `디자인 + 제작 한 번에 진행했더니 상담 속도가 달라졌습니다`
-        ];
-
-        const youtubeDescription = `손님은 있는데 매출이 안 오르면, 콘텐츠 구조부터 잘못된 겁니다.\n\n${selectedStyle.problemLead}\n이번 작업은 “${d.customerProblem}”을 끊고 ${d.usagePurpose}를 만들기 위해 진행했습니다.\n디자인 + 제작 한 번에 진행으로 ${d.productionDetail}을 빠르게 반영했고, ${d.highlightPoint} 중심으로 문의 흐름을 다시 세팅했습니다.\n\n바로 진행 문의\n- 문의: 031-901-5231\n- 카카오: ${d.kakaoChannel} (업종/제작물만 보내주세요)\n\n#망고아트 #${tagIndustry} #${tagRegion} #마케팅전략 #콘텐츠제작`;
-
-        const kakaoMessage = `${d.customerName}님, 지금 안 바꾸면 같은 문제 반복됩니다.\n\n${d.region} ${d.industry} 기준으로 ${d.customerProblem}부터 끊겠습니다.\n${d.item}를 ${d.usagePurpose} 중심으로 바로 재구성하고,\n디자인 + 제작 한 번에 진행으로 일정 지연 없이 바로 착수합니다.\n\n업종 / 제작물만 보내주시면 바로 방향 잡아드립니다.\n문의: 031-901-5231\n카카오: ${d.kakaoChannel}`;
-
-        const thumbnailPhrases = [
-          `${d.region} ${d.industry} 문의 폭발`,
-          `${d.item} 하나로 반응 UP`,
-          `${d.customerProblem} 이제 끝`,
-          `3초 시선 고정 카피`,
-          `${d.usagePurpose} 실전 제작 공개`
-        ];
-
-        return { blogTitles, blogBody, instagramPost, reelsScript, shortsTitles, youtubeDescription, kakaoMessage, thumbnailPhrases, form: d };
-      }
-
-      function showToast(msg) {
-        const el = document.getElementById('toast');
-        el.textContent = msg;
-        el.classList.add('show');
-        clearTimeout(showToast.timer);
-        showToast.timer = setTimeout(() => el.classList.remove('show'), 1300);
-      }
-
-      async function copyText(title, value) {
-        const text = Array.isArray(value) ? value.map((v, i) => `${i + 1}. ${v}`).join('\n') : value;
-        try { await navigator.clipboard.writeText(text); }
-        catch {
-          const ta = document.createElement('textarea'); ta.value = text; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove();
-        }
-        showToast(title + ' 복사 완료');
-      }
-
-      function buildAllText(content) {
-        return [
-          '블로그 제목 3개\n' + content.blogTitles.map((v, i) => `${i + 1}. ${v}`).join('\n'),
-          '\n블로그 본문\n' + content.blogBody,
-          '\n인스타 게시글\n' + content.instagramPost,
-          '\n릴스 대본\n' + content.reelsScript,
-          '\n유튜브 쇼츠 제목 5개\n' + content.shortsTitles.map((v, i) => `${i + 1}. ${v}`).join('\n'),
-          '\n유튜브 설명 + 해시태그\n' + content.youtubeDescription,
-          '\n카카오 상담 문구\n' + content.kakaoMessage,
-          '\n썸네일 문구 5개\n' + content.thumbnailPhrases.map((v, i) => `${i + 1}. ${v}`).join('\n')
-        ].join('\n');
-      }
-
-      function renderResults(content) {
-        currentContent = content;
-        const blocks = [
-          ['블로그 제목 3개', content.blogTitles],
-          ['블로그 본문', content.blogBody],
-          ['인스타 게시글', content.instagramPost],
-          ['릴스 대본', content.reelsScript],
-          ['유튜브 쇼츠 제목 5개', content.shortsTitles],
-          ['유튜브 설명 + 해시태그', content.youtubeDescription],
-          ['카카오 상담 문구', content.kakaoMessage],
-          ['썸네일 문구 5개', content.thumbnailPhrases]
-        ];
-
-        const root = document.getElementById('results');
-        root.innerHTML = '';
-        blocks.forEach(([title, value]) => {
-          const card = document.createElement('section'); card.className = 'card';
-          const header = document.createElement('div'); header.className = 'cardHeader';
-          const h3 = document.createElement('h3'); h3.textContent = title;
-          const btn = document.createElement('button'); btn.className = 'copyBtn'; btn.type = 'button'; btn.textContent = '복사';
-          btn.addEventListener('click', () => copyText(title, value));
-          header.append(h3, btn); card.appendChild(header);
-          if (Array.isArray(value)) {
-            const ol = document.createElement('ol'); value.forEach((item) => { const li = document.createElement('li'); li.textContent = item; ol.appendChild(li); }); card.appendChild(ol);
-          } else {
-            const pre = document.createElement('pre'); pre.textContent = value; card.appendChild(pre);
-          }
-          root.appendChild(card);
+      async function generateContent(form) {
+        if (!form.openaiApiKey) throw new Error('OpenAI API Key를 입력해 주세요.');
+        const prompt = `다음 정보를 기반으로 한국어 마케팅 콘텐츠 JSON만 생성해줘.\n브랜드:${form.brand}\n업종:${form.industry}\n타겟:${form.target}\n목표:${form.goal}\nOCR:${form.ocrText}\n추가:${form.extraInstruction}\n필드: blog_title, blog_body, instagram_post, youtube_description, image_prompt, video_storyboard(배열5개).`;
+        const res = await fetch('https://api.openai.com/v1/chat/completions', {
+          method:'POST', headers:{'Content-Type':'application/json','Authorization':`Bearer ${form.openaiApiKey}`},
+          body: JSON.stringify({ model:'gpt-4o-mini', messages:[{role:'system',content:'너는 퍼포먼스 마케터다. 결과는 JSON만.'},{role:'user',content:prompt}], temperature:0.8 })
         });
+        const data = await res.json();
+        const raw = data.choices?.[0]?.message?.content || '{}';
+        return JSON.parse(raw.replace(/```json|```/g,''));
       }
 
-      function getSaved() {
-        try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); }
-        catch { return []; }
+      function renderResults(c) {
+        currentContent = c;
+        const blocks = [['블로그 제목', c.blog_title], ['블로그 본문', c.blog_body], ['인스타그램 게시글', c.instagram_post], ['유튜브 설명', c.youtube_description], ['이미지 생성 프롬프트', c.image_prompt], ['영상 스토리보드(5컷)', (c.video_storyboard||[]).map((v,i)=>`${i+1}. ${v}`).join('\n')]];
+        $('results').innerHTML = blocks.map(([t,v]) => `<section class="card"><div class="cardHeader"><h3>${t}</h3><button class="copyBtn" type="button" onclick='copyBlock(${JSON.stringify(String(v||'')).replace(/'/g,"&#39;")})'>복사</button></div><pre>${String(v||'')}</pre></section>`).join('');
       }
-      function setSaved(list) { localStorage.setItem(STORAGE_KEY, JSON.stringify(list)); }
+      window.copyBlock = async (txt) => { await navigator.clipboard.writeText(txt); toast('복사 완료'); };
 
-      function saveCurrent() {
-        if (!currentContent) return showToast('먼저 콘텐츠를 생성해 주세요.');
-        const entry = {
-          id: Date.now(),
-          savedAt: nowString(),
-          customerName: currentContent.form.customerName,
-          item: currentContent.form.item,
-          industry: currentContent.form.industry,
-          region: currentContent.form.region,
-          content: currentContent
-        };
-        const list = getSaved();
-        list.unshift(entry);
-        setSaved(list.slice(0, 50));
-        renderSavedList();
-        showToast('저장 완료');
-      }
+      $('analyzeBtn').addEventListener('click', async () => {
+        try {
+          const fd = Object.fromEntries(new FormData($('contentForm')).entries());
+          $('ocrText').value = await runOcr(fd.ocrProvider, fd); toast('OCR 분석 완료');
+        } catch (e) { toast(e.message); }
+      });
 
-      function fillForm(data) {
-        const form = document.getElementById('contentForm');
-        Object.entries(data).forEach(([k, v]) => { if (form.elements[k]) form.elements[k].value = v; });
-      }
-
-      const styleOptions = [
-        { value: 'default', label: '기본형' },
-        { value: 'sales', label: '강한 영업형' },
-        { value: 'insta', label: '인스타형' },
-        { value: 'blog', label: '블로그형' },
-        { value: 'ad', label: '광고형' }
-      ];
-
-      function renderSavedList() {
-        const root = document.getElementById('savedList');
-        const list = getSaved();
-        root.innerHTML = '';
-        if (!list.length) {
-          root.innerHTML = '<p class="empty">저장된 사례가 없습니다. 콘텐츠를 생성한 뒤 저장해 주세요.</p>';
-          return;
-        }
-        list.forEach((entry) => {
-          const card = document.createElement('article'); card.className = 'savedItem';
-          const meta = document.createElement('p'); meta.className = 'savedMeta';
-          meta.textContent = `${entry.savedAt} | ${entry.customerName} | ${entry.item} | ${entry.industry} | ${entry.region}`;
-          const btns = document.createElement('div'); btns.className = 'savedBtns';
-          const regen = document.createElement('button'); regen.className = 'ghost'; regen.textContent = '다시 생성';
-          regen.addEventListener('click', () => {
-            const nextForm = { ...(entry.content?.form || {}), contentStyle: styleSelect.value };
-            fillForm(nextForm);
-            makeContent();
-            showToast('선택한 스타일로 다시 생성했습니다.');
-          });
-          const del = document.createElement('button'); del.className = 'danger'; del.textContent = '삭제';
-          del.addEventListener('click', () => { setSaved(getSaved().filter((x) => x.id !== entry.id)); renderSavedList(); showToast('삭제 완료'); });
-          btns.append(regen, del);
-
-          const styleRow = document.createElement('div'); styleRow.className = 'savedStyleRow';
-          const styleSelect = document.createElement('select');
-          styleOptions.forEach((opt) => {
-            const option = document.createElement('option');
-            option.value = opt.value;
-            option.textContent = opt.label;
-            styleSelect.appendChild(option);
-          });
-          styleSelect.value = entry.content?.form?.contentStyle || 'default';
-          styleSelect.addEventListener('change', () => {
-            const listNow = getSaved();
-            const idx = listNow.findIndex((x) => x.id === entry.id);
-            if (idx < 0) return;
-            listNow[idx].content.form.contentStyle = styleSelect.value;
-            setSaved(listNow);
-            showToast('스타일 선택이 저장되었습니다.');
-          });
-          styleRow.append(styleSelect);
-
-          card.append(meta, btns, styleRow); root.appendChild(card);
-        });
-      }
-
-      function makeContent() {
-        const formEl = document.getElementById('contentForm');
-        const fd = new FormData(formEl);
-        renderResults(buildContent(Object.fromEntries(fd.entries())));
-      }
-
-      document.getElementById('contentForm').addEventListener('submit', function (e) {
+      $('contentForm').addEventListener('submit', async (e) => {
         e.preventDefault();
-        makeContent();
+        try { const fd = Object.fromEntries(new FormData($('contentForm')).entries()); const c = await generateContent(fd); renderResults(c); toast('콘텐츠 생성 완료'); }
+        catch (err) { toast('생성 실패: ' + err.message); }
       });
 
-      document.querySelectorAll('[data-sample-key]').forEach((btn) => {
-        btn.addEventListener('click', () => {
-          const sample = sampleDataMap[btn.dataset.sampleKey];
-          if (!sample) return;
-          fillForm(sample);
-          makeContent();
-          showToast(btn.textContent + ' 자동 입력 완료');
-        });
-      });
+      function saved() { try { return JSON.parse(localStorage.getItem(STORAGE_KEY)||'[]'); } catch { return []; } }
+      function persist(list) { localStorage.setItem(STORAGE_KEY, JSON.stringify(list)); }
+      function renderSaved() {
+        const list = saved();
+        $('savedList').innerHTML = list.length ? list.map(x=>`<article class='savedItem'><p>${x.time} | ${x.brand} | ${x.industry}</p><button class='ghost' onclick='reuse(${x.id})'>재활용</button></article>`).join('') : '<p>저장된 콘텐츠가 없습니다.</p>';
+      }
+      window.reuse = (id) => {
+        const item = saved().find(x=>x.id===id); if (!item) return;
+        Object.entries(item.form).forEach(([k,v])=>{ if ($('contentForm').elements[k]) $('contentForm').elements[k].value=v; });
+        $('ocrText').value = item.form.ocrText || ''; renderResults(item.content); toast('저장 콘텐츠 재활용 완료');
+      };
 
-      document.getElementById('copyAllBtn').addEventListener('click', () => {
-        if (!currentContent) return showToast('먼저 콘텐츠를 생성해 주세요.');
-        copyText('전체 콘텐츠', buildAllText(currentContent));
+      $('saveBtn').addEventListener('click', () => {
+        if (!currentContent) return toast('먼저 콘텐츠를 생성해 주세요.');
+        const form = Object.fromEntries(new FormData($('contentForm')).entries());
+        const list = saved(); list.unshift({ id: Date.now(), time: new Date().toISOString().slice(0,16).replace('T',' '), brand: form.brand || '브랜드', industry: form.industry || '업종', form, content: currentContent });
+        persist(list.slice(0,50)); renderSaved(); toast('저장 완료');
       });
-      document.getElementById('saveBtn').addEventListener('click', saveCurrent);
-      document.getElementById('resetBtn').addEventListener('click', () => {
-        document.getElementById('contentForm').reset();
-        const blank = buildContent({});
-        renderResults(blank);
-        showToast('입력값을 초기화했습니다.');
+      $('copyAllBtn').addEventListener('click', async () => {
+        if (!currentContent) return toast('먼저 콘텐츠를 생성해 주세요.');
+        await navigator.clipboard.writeText(JSON.stringify(currentContent, null, 2)); toast('전체 복사 완료');
       });
-      document.getElementById('clearSavedBtn').addEventListener('click', () => {
-        localStorage.removeItem(STORAGE_KEY);
-        renderSavedList();
-        showToast('저장 목록 전체 삭제 완료');
-      });
-
-      renderResults(buildContent({}));
-      renderSavedList();
+      $('clearSavedBtn').addEventListener('click', () => { localStorage.removeItem(STORAGE_KEY); renderSaved(); toast('전체 삭제 완료'); });
+      renderSaved(); $('preview').innerHTML='<p class="desc">업로드한 이미지가 이 영역에 표시됩니다.</p>';
     </script>
   </body>
 </html>
