@@ -23,20 +23,17 @@
     <main class="wrap">
       <section class="card">
         <h1>망고아트 AI 콘텐츠 생성기</h1>
-        <p class="desc">이미지/영상 업로드 → 핵심정보 추출(Vision/Rekognition) → GPT-4 텍스트 생성 → DALL·E 이미지/Runway 영상 생성 가이드 → 채널 포맷화/자동 게시/저장 재활용.</p>
-        <div class="flow"><div>1. 파일 업로드</div><div>2. AI 분석</div><div>3. 텍스트 생성</div><div>4. 이미지 생성</div><div>5. 영상 생성</div><div>6. 게시/저장</div></div>
+        <p class="desc">이미지 업로드 → Google Vision 분석 → GPT-4 텍스트 생성 → Instagram/블로그/YouTube Shorts 포맷화 → 저장/재활용.</p>
+        <div class="flow"><div>1. 파일 업로드</div><div>2. Vision 분석</div><div>3. GPT-4 생성</div><div>4. Instagram 캡션</div><div>5. 블로그 본문</div><div>6. Shorts 스크립트</div></div>
       </section>
 
       <form id="contentForm" class="card grid">
         <label>업로드 타입<select name="mediaType" id="mediaType"><option value="image">이미지</option><option value="video">영상</option></select></label>
         <label>파일 업로드<input type="file" id="mediaInput" accept="image/*,video/*" /></label>
-        <label>분석 공급자<select name="visionProvider"><option value="vision">Google Vision</option><option value="rekognition">AWS Rekognition</option></select></label>
+        <label>분석 공급자<select name="visionProvider"><option value="vision">Google Vision</option></select></label>
         <label>OpenAI API Key<input name="openaiApiKey" type="password" placeholder="sk-..." /></label>
         <label>Google Vision API Key<input name="googleApiKey" type="password" placeholder="Vision 사용 시" /></label>
-        <label>AWS Access Key<input name="awsAccessKey" type="password" placeholder="Rekognition 사용 시" /></label>
-        <label>AWS Secret Key<input name="awsSecretKey" type="password" placeholder="Rekognition 사용 시" /></label>
-        <label>Runway API Key<input name="runwayApiKey" type="password" placeholder="선택 사항" /></label>
-        <label>Instagram Access Token<input name="instagramToken" type="password" placeholder="자동 게시용" /></label>
+                <label>Instagram Access Token<input name="instagramToken" type="password" placeholder="자동 게시용" /></label>
         <label>YouTube Access Token<input name="youtubeToken" type="password" placeholder="자동 게시용" /></label>
         <label>브랜드/상품명<input name="brand" /></label><label>업종<input name="industry" /></label><label>목표고객<input name="target" /></label><label>캠페인 목표<input name="goal" /></label>
         <label class="full">추가 지시사항<textarea name="extraInstruction"></textarea></label>
@@ -66,12 +63,10 @@
         return `라벨: ${labels}\nOCR: ${text}`;
       }
 
-      async function runRekognition(){return '브라우저 단독 환경에서는 AWS SigV4 서명 필요로 데모 제한. 서버에서 Rekognition DetectLabels/DetectText/StartLabelDetection 연동 권장.'}
-
-      async function generateContent(form){
-        const prompt=`아래 입력을 바탕으로 한국어 JSON만 출력해라.\n브랜드:${form.brand}\n업종:${form.industry}\n타겟:${form.target}\n목표:${form.goal}\n핵심정보:${form.insightText}\n추가:${form.extraInstruction}\n필드: blog_title, blog_body, instagram_post, youtube_description, image_prompt, video_prompt, youtube_script, reel_script, hashtags(배열10개)`;
+            async function generateContent(form){
+        const prompt=`아래 입력을 바탕으로 한국어 JSON만 출력해라.\n브랜드:${form.brand}\n업종:${form.industry}\n타겟:${form.target}\n목표:${form.goal}\n핵심정보:${form.insightText}\n추가:${form.extraInstruction}\n필드: blog_title, blog_body, instagram_caption, youtube_shorts_title, youtube_shorts_description, youtube_shorts_script, hook_line, cta_line, image_prompt, hashtags(배열10개)`;
         const res=await fetch('https://api.openai.com/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json',Authorization:`Bearer ${form.openaiApiKey}`},body:JSON.stringify({model:'gpt-4',messages:[{role:'system',content:'너는 마케팅 콘텐츠 자동화 엔진이다. JSON만 출력.'},{role:'user',content:prompt}],temperature:0.8})});
-        const d=await res.json(); const raw=d.choices?.[0]?.message?.content||'{}'; return JSON.parse(raw.replace(/```json|```/g,''));
+        const d=await res.json(); const raw=d.choices?.[0]?.message?.content||'{}'; return JSON.parse(raw.replace(/```json|```/g,'').trim());
       }
 
       async function generateImage(form){
@@ -82,16 +77,16 @@
 
       function renderResults(c){
         currentContent=c;
-        const ig=`[인스타 포맷]\n${c.instagram_post}\n\n${(c.hashtags||[]).map(x=>`#${x.replace('#','')}`).join(' ')}`;
-        const yt=`[유튜브 포맷]\n제목: ${c.blog_title}\n설명: ${c.youtube_description}\n스크립트: ${c.youtube_script||''}`;
+        const ig=`[Instagram 캡션]\n${c.instagram_caption}\n\n${(c.hashtags||[]).map(x=>`#${x.replace('#','')}`).join(' ')}`;
+        const yt=`[YouTube Shorts]\n제목: ${c.youtube_shorts_title}\n설명: ${c.youtube_shorts_description}\n훅: ${c.hook_line}\nCTA: ${c.cta_line}\n스크립트:\n${c.youtube_shorts_script||''}`;
         const blog=`[블로그 포맷]\n제목: ${c.blog_title}\n본문:\n${c.blog_body}`;
-        const blocks=[['블로그',blog],['인스타그램',ig],['유튜브',yt],['DALL·E 프롬프트',c.image_prompt],['Runway 영상 프롬프트',c.video_prompt],['릴스 스크립트',c.reel_script||'']];
-        $('results').innerHTML=blocks.map(([t,v])=>`<section class='card'><div class='cardHeader'><h3>${t}</h3><button class='copyBtn' onclick='copyBlock(${JSON.stringify(String(v||'')).replace(/'/g,"&#39;")})'>복사</button></div><pre>${String(v||'')}</pre></section>`).join('') + `<section class='card'><h3>자동 게시/다운로드 가이드</h3><pre>• Instagram Graph API: /media -> /media_publish\n• YouTube Data API videos.insert\n• Runway API: 아래 video_prompt로 Text-to-Video 생성\n• 필요 시 JSON 전체 다운로드 버튼으로 보관</pre><button class='ghost' onclick='downloadCurrent()'>JSON 다운로드</button></section>`;
+        const blocks=[['블로그',blog],['인스타그램',ig],['YouTube Shorts',yt],['이미지 생성 프롬프트',c.image_prompt]];
+        $('results').innerHTML=blocks.map(([t,v])=>`<section class='card'><div class='cardHeader'><h3>${t}</h3><button class='copyBtn' onclick='copyBlock(${JSON.stringify(String(v||'')).replace(/'/g,"&#39;")})'>복사</button></div><pre>${String(v||'')}</pre></section>`).join('') + `<section class='card'><h3>자동 게시/다운로드 가이드</h3><pre>• Instagram Graph API: /media -> /media_publish\n• YouTube Data API videos.insert (Shorts 메타데이터 포함)\n• 필요 시 JSON 전체 다운로드 버튼으로 보관</pre><button class='ghost' onclick='downloadCurrent()'>JSON 다운로드</button></section>`;
       }
       window.copyBlock=async(t)=>{await navigator.clipboard.writeText(t);toast('복사 완료')};
       window.downloadCurrent=()=>{if(!currentContent)return;const blob=new Blob([JSON.stringify(currentContent,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`mangoart-content-${Date.now()}.json`;a.click();URL.revokeObjectURL(a.href)};
 
-      $('analyzeBtn').addEventListener('click',async()=>{try{if(!mediaBase64)throw new Error('파일 업로드 필요');const f=Object.fromEntries(new FormData($('contentForm')).entries());$('insightText').value=f.visionProvider==='vision'?await runVision(f):await runRekognition(f);toast('핵심 정보 추출 완료')}catch(e){toast(e.message)}});
+      $('analyzeBtn').addEventListener('click',async()=>{try{if(!mediaBase64)throw new Error('파일 업로드 필요');const f=Object.fromEntries(new FormData($('contentForm')).entries());$('insightText').value=await runVision(f);toast('핵심 정보 추출 완료')}catch(e){toast(e.message)}});
       $('contentForm').addEventListener('submit',async(e)=>{e.preventDefault();try{const f=Object.fromEntries(new FormData($('contentForm')).entries());if(!f.openaiApiKey)throw new Error('OpenAI API Key 필요');const c=await generateContent(f);renderResults(c);toast('텍스트/포맷 생성 완료')}catch(e){toast('생성 실패: '+e.message)}});
       $('makeImageBtn').addEventListener('click',async()=>{try{const f=Object.fromEntries(new FormData($('contentForm')).entries());const img=await generateImage(f);if(!img)throw new Error('이미지 URL 응답 없음');$('results').insertAdjacentHTML('afterbegin',`<section class='card'><h3>생성 이미지</h3><img class='thumb' src='${img}'/><pre>${img}</pre></section>`);currentContent.generated_image_url=img;toast('DALL·E 이미지 생성 완료')}catch(e){toast('이미지 생성 실패: '+e.message)}});
       $('publishBtn').addEventListener('click',()=>{if(!currentContent)return toast('먼저 콘텐츠 생성');toast('자동 게시 요청 준비 완료(토큰 연동 시 API 호출 가능)')});
