@@ -67,6 +67,9 @@
       input {
         width: 100%; padding: 11px; border: 1px solid #efc97a; border-radius: 10px; font-size: 14px; background: #fff;
       }
+      select {
+        width: 100%; padding: 11px; border: 1px solid #efc97a; border-radius: 10px; font-size: 14px; background: #fff;
+      }
       .full { grid-column: 1 / -1; }
 
       .actions { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; grid-column: 1 / -1; }
@@ -107,6 +110,7 @@
       .savedMeta { font-size: 13px; color: var(--text-sub); margin: 0 0 8px; line-height: 1.6; }
       .savedBtns { display: flex; gap: 8px; }
       .savedBtns button { flex: 1; padding: 8px; font-size: 13px; }
+      .savedStyleRow { display: flex; gap: 8px; margin-top: 8px; }
 
       .empty { margin: 0; color: #8f7a54; font-size: 14px; }
 
@@ -157,6 +161,15 @@
         <label class="full">제작 내용<input name="productionDetail" placeholder="예: 매장 동선 맞춤 POP/배너 세트 제작" /></label>
         <label class="full">강조 포인트<input name="highlightPoint" placeholder="예: 3초 시선 고정 헤드카피" /></label>
         <label class="full">카카오채널 문구<input name="kakaoChannel" placeholder="예: 카카오채널 @망고아트" /></label>
+        <label class="full">생성 스타일
+          <select name="contentStyle">
+            <option value="default">기본형</option>
+            <option value="sales">강한 영업형</option>
+            <option value="ad">광고형 (짧고 강한 문장)</option>
+            <option value="blog">블로그형 (긴 글)</option>
+            <option value="insta">인스타형 (짧고 임팩트)</option>
+          </select>
+        </label>
 
         <div class="actions">
           <button class="primary" type="submit">콘텐츠 생성</button>
@@ -186,7 +199,8 @@
       const defaults = {
         customerName: '고객사 담당자', item: '맞춤 제작물', industry: '일반 업종', region: '우리 지역',
         usagePurpose: '상담 전환 확대', phone: '010-0000-0000', customerProblem: '고객 유입이 정체된 상황',
-        productionDetail: '브랜드 맞춤형 디자인 제작', highlightPoint: '전환을 만드는 핵심 포인트 반영', kakaoChannel: '카카오채널 @망고아트'
+        productionDetail: '브랜드 맞춤형 디자인 제작', highlightPoint: '전환을 만드는 핵심 포인트 반영', kakaoChannel: '카카오채널 @망고아트',
+        contentStyle: 'default'
       };
       const sampleDataMap = {
         cafePop: {
@@ -223,6 +237,7 @@
 
       function buildContent(form) {
         const d = normalize(form);
+        const styleTone = d.contentStyle;
         const tagRegion = d.region.replace(/\s+/g, '');
         const tagIndustry = d.industry.replace(/\s+/g, '');
         const industryText = d.industry.toLowerCase();
@@ -284,7 +299,16 @@
           `${d.region} ${d.industry} ${selectedStyle.blogTitleSeeds[2]}`
         ];
 
-        const blogBody = `${selectedStyle.problemLead} “${d.customerProblem}”을 그대로 두면 다음 달도 결과는 같습니다.\n\n${d.customerName}님 현장도 같았습니다. ${d.region} ${d.industry}에서 ${d.item}를 갈아엎고 전환 동선부터 다시 잡았습니다.\n\n디자인 + 제작 한 번에 진행으로 시간 끌지 않고 바로 실행했습니다. ${d.productionDetail} 기준으로 문구·레이아웃·노출 위치를 바꿨고, ${d.highlightPoint}를 첫 시선 자리에 꽂았습니다.\n\n${selectedStyle.valueLead} 결과적으로 문의 진입이 빨라지고 상담 전환까지 끊기지 않게 만들었습니다.\n\n${selectedStyle.ctaLead} 디자인 + 제작 한 번에 진행, 문의: 031-901-5231. ${d.kakaoChannel}로 업종/제작물만 보내주시면 바로 시작합니다.`;
+        const styleTextMap = {
+          default: { lead: '', cta: selectedStyle.ctaLead },
+          sales: { lead: '지금 안 바꾸면 경쟁사에 고객을 넘기는 겁니다. ', cta: '오늘 바로 실행 가능하게 빠르게 견적/방향 제시해드립니다.' },
+          ad: { lead: '짧게, 강하게, 바로 전환. ', cta: '문의 한 번으로 바로 실행: 031-901-5231' },
+          blog: { lead: '아래는 실제 현장 기준으로 정리한 상세 케이스입니다. ', cta: '상세 기획부터 제작/출력까지 원스톱으로 연결해드립니다.' },
+          insta: { lead: '한 줄 요약: 시선 잡고 문의까지 바로 연결. ', cta: 'DM/카카오로 바로 시작하세요.' }
+        };
+        const styleConfig = styleTextMap[styleTone] || styleTextMap.default;
+
+        const blogBody = `${styleConfig.lead}${selectedStyle.problemLead} “${d.customerProblem}”을 그대로 두면 다음 달도 결과는 같습니다.\n\n${d.customerName}님 현장도 같았습니다. ${d.region} ${d.industry}에서 ${d.item}를 갈아엎고 전환 동선부터 다시 잡았습니다.\n\n디자인 + 제작 한 번에 진행으로 시간 끌지 않고 바로 실행했습니다. ${d.productionDetail} 기준으로 문구·레이아웃·노출 위치를 바꿨고, ${d.highlightPoint}를 첫 시선 자리에 꽂았습니다.\n\n${selectedStyle.valueLead} 결과적으로 문의 진입이 빨라지고 상담 전환까지 끊기지 않게 만들었습니다.\n\n${styleConfig.cta} 디자인 + 제작 한 번에 진행, 문의: 031-901-5231. ${d.kakaoChannel}로 업종/제작물만 보내주시면 바로 시작합니다.`;
 
         const instagramPost = `손님은 있는데 문의가 안 늘면, 지금 콘텐츠가 문제입니다.\n\n${d.region} ${d.industry}에서 ${d.item} 구성 바꾸자\n${selectedStyle.valueLead}\n\n디자인 + 제작 한 번에 진행으로 ${d.highlightPoint}까지 바로 반영했습니다.\n지금 미루면 이번 주 손님도 놓칩니다.\n\n문의: 031-901-5231\n💬 ${d.kakaoChannel} (업종/제작물만 보내주세요)\n\n#망고아트 #${tagRegion} #${tagIndustry} #콘텐츠제작 #매출전환`;
 
@@ -403,6 +427,14 @@
         Object.entries(data).forEach(([k, v]) => { if (form.elements[k]) form.elements[k].value = v; });
       }
 
+      const styleOptions = [
+        { value: 'default', label: '기본형' },
+        { value: 'sales', label: '강한 영업형' },
+        { value: 'ad', label: '광고형 (짧고 강한 문장)' },
+        { value: 'blog', label: '블로그형 (긴 글)' },
+        { value: 'insta', label: '인스타형 (짧고 임팩트)' }
+      ];
+
       function renderSavedList() {
         const root = document.getElementById('savedList');
         const list = getSaved();
@@ -416,11 +448,37 @@
           const meta = document.createElement('p'); meta.className = 'savedMeta';
           meta.textContent = `${entry.savedAt} | ${entry.customerName} | ${entry.item} | ${entry.industry} | ${entry.region}`;
           const btns = document.createElement('div'); btns.className = 'savedBtns';
-          const load = document.createElement('button'); load.className = 'ghost'; load.textContent = '불러오기';
-          load.addEventListener('click', () => { fillForm(entry.content.form); renderResults(entry.content); showToast('저장 항목을 불러왔습니다.'); });
+          const regen = document.createElement('button'); regen.className = 'ghost'; regen.textContent = '다시 생성';
+          regen.addEventListener('click', () => {
+            fillForm(entry.content.form);
+            makeContent();
+            showToast('저장 사례로 다시 생성했습니다.');
+          });
           const del = document.createElement('button'); del.className = 'danger'; del.textContent = '삭제';
           del.addEventListener('click', () => { setSaved(getSaved().filter((x) => x.id !== entry.id)); renderSavedList(); showToast('삭제 완료'); });
-          btns.append(load, del); card.append(meta, btns); root.appendChild(card);
+          btns.append(regen, del);
+
+          const styleRow = document.createElement('div'); styleRow.className = 'savedStyleRow';
+          const styleSelect = document.createElement('select');
+          styleOptions.forEach((opt) => {
+            const option = document.createElement('option');
+            option.value = opt.value;
+            option.textContent = opt.label;
+            styleSelect.appendChild(option);
+          });
+          styleSelect.value = entry.content?.form?.contentStyle || 'default';
+          const styleBtn = document.createElement('button');
+          styleBtn.className = 'primary';
+          styleBtn.textContent = '스타일 변경';
+          styleBtn.addEventListener('click', () => {
+            const nextForm = { ...(entry.content?.form || {}), contentStyle: styleSelect.value };
+            fillForm(nextForm);
+            makeContent();
+            showToast('스타일 변경 후 재생성 완료');
+          });
+          styleRow.append(styleSelect, styleBtn);
+
+          card.append(meta, btns, styleRow); root.appendChild(card);
         });
       }
 
