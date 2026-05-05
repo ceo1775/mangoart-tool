@@ -3,167 +3,105 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>망고아트 AI 마케팅 콘텐츠 스튜디오</title>
+    <title>망고아트 AI 콘텐츠 생성기</title>
     <style>
-      :root {
-        --mango-50: #fff9e9;
-        --mango-200: #ffe08a;
-        --mango-500: #ff9f1a;
-        --mango-700: #c56c00;
-        --text-main: #2f2411;
-        --text-sub: #6b5325;
-        --border: #f0d8a7;
-        --card: #fffef9;
-      }
-      * { box-sizing: border-box; }
-      body { margin: 0; font-family: 'Pretendard', 'Noto Sans KR', sans-serif; color: var(--text-main); background: linear-gradient(180deg, var(--mango-50), #fff 35%); }
-      .wrap { max-width: 1160px; margin: 0 auto; padding: 20px 14px 50px; }
-      .card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 16px; margin-bottom: 12px; box-shadow: 0 6px 18px rgba(255, 185, 56, 0.12); }
-      h1 { margin: 0 0 6px; color: #8a4e00; }
-      .desc { margin: 0; color: var(--text-sub); }
-      .flow { display:grid; grid-template-columns: repeat(5,minmax(0,1fr)); gap:8px; margin-top:14px; }
-      .flowStep { background:#fff7df; border:1px solid var(--border); border-radius:999px; padding:8px; font-size:13px; text-align:center; font-weight:700; }
-      .grid { display:grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap:10px; }
-      label { display:flex; flex-direction:column; gap:6px; font-size:13px; font-weight:700; }
-      input,select,textarea { width:100%; padding:10px; border:1px solid #efc97a; border-radius:10px; font-size:14px; background:#fff; }
-      textarea { min-height:96px; resize:vertical; }
-      .full { grid-column:1/-1; }
-      .actions { display:grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap:8px; grid-column:1/-1; }
-      button { border:0; border-radius:10px; padding:10px; font-weight:800; cursor:pointer; }
-      .primary { color:#fff; background:linear-gradient(120deg,var(--mango-500),#ffb938); }
-      .ghost { color:#8a4e00; background:#fff8e6; border:1px solid #efc97a; }
-      .cardHeader { display:flex; justify-content:space-between; align-items:center; gap:8px; margin-bottom:8px; }
-      .copyBtn { border:1px solid #efc97a; background:#fff9ea; color:#8a4e00; padding:6px 9px; border-radius:8px; }
-      pre { margin:0; white-space:pre-wrap; line-height:1.6; }
-      .thumb { max-width:200px; border-radius:10px; border:1px solid var(--border); }
-      .savedGrid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; }
-      .savedItem { border:1px solid var(--border); background:#fffdf4; border-radius:12px; padding:10px; }
-      .toast { position:fixed; right:16px; bottom:16px; background:#3f2b06; color:#fff; padding:10px 14px; border-radius:8px; opacity:0; transform:translateY(8px); transition:.2s; pointer-events:none; }
-      .toast.show { opacity:1; transform:translateY(0); }
-      @media (max-width: 900px) { .actions,.flow { grid-template-columns:repeat(2,minmax(0,1fr)); } }
-      @media (max-width: 768px) { .grid,.savedGrid,.flow { grid-template-columns:1fr; } }
+      :root{--m50:#fff9e9;--m500:#ff9f1a;--m700:#8a4e00;--text:#2f2411;--sub:#6b5325;--bd:#f0d8a7;--card:#fffef9}
+      *{box-sizing:border-box} body{margin:0;font-family:Pretendard,'Noto Sans KR',sans-serif;color:var(--text);background:linear-gradient(180deg,var(--m50),#fff 35%)}
+      .wrap{max-width:1200px;margin:0 auto;padding:18px 14px 50px}.card{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:16px;margin-bottom:12px}
+      .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.full{grid-column:1/-1}label{display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:700}
+      input,select,textarea{width:100%;padding:10px;border:1px solid #efc97a;border-radius:10px;font-size:14px;background:#fff}textarea{min-height:92px;resize:vertical}
+      button{border:0;border-radius:10px;padding:10px;font-weight:800;cursor:pointer}.primary{color:#fff;background:linear-gradient(120deg,var(--m500),#ffb938)}.ghost{color:var(--m700);background:#fff8e6;border:1px solid #efc97a}
+      .actions{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;grid-column:1/-1}.desc{margin:4px 0;color:var(--sub)}.flow{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px;margin-top:10px}
+      .flow div{background:#fff7df;border:1px solid var(--bd);border-radius:999px;padding:8px;font-size:12px;text-align:center;font-weight:700}
+      .thumb{max-width:220px;border:1px solid var(--bd);border-radius:10px}.cardHeader{display:flex;justify-content:space-between;align-items:center}.copyBtn{border:1px solid #efc97a;background:#fff9ea;color:var(--m700);padding:6px 9px;border-radius:8px}
+      pre{margin:0;white-space:pre-wrap;line-height:1.6}.savedGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.savedItem{border:1px solid var(--bd);background:#fffdf4;border-radius:12px;padding:10px}
+      .toast{position:fixed;right:16px;bottom:16px;background:#3f2b06;color:#fff;padding:10px 14px;border-radius:8px;opacity:0;transform:translateY(8px);transition:.2s;pointer-events:none}.toast.show{opacity:1;transform:translateY(0)}
+      @media (max-width:900px){.actions,.flow{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:768px){.grid,.savedGrid,.flow{grid-template-columns:1fr}}
     </style>
   </head>
   <body>
     <main class="wrap">
       <section class="card">
-        <h1>망고아트 AI 마케팅 콘텐츠 스튜디오</h1>
-        <p class="desc">이미지 업로드 → 텍스트 추출(OCR) → GPT 콘텐츠 생성 → 인스타/유튜브/블로그 포맷 → 저장/재활용 + 이미지/영상 생성 프롬프트 자동화.</p>
-        <div class="flow">
-          <div class="flowStep">1. 이미지 업로드</div><div class="flowStep">2. OCR 분석</div><div class="flowStep">3. GPT 생성</div><div class="flowStep">4. 채널 포맷</div><div class="flowStep">5. 저장/재활용</div>
-        </div>
+        <h1>망고아트 AI 콘텐츠 생성기</h1>
+        <p class="desc">이미지/영상 업로드 → 핵심정보 추출(Vision/Rekognition) → GPT-4 텍스트 생성 → DALL·E 이미지/Runway 영상 생성 가이드 → 채널 포맷화/자동 게시/저장 재활용.</p>
+        <div class="flow"><div>1. 파일 업로드</div><div>2. AI 분석</div><div>3. 텍스트 생성</div><div>4. 이미지 생성</div><div>5. 영상 생성</div><div>6. 게시/저장</div></div>
       </section>
 
       <form id="contentForm" class="card grid">
-        <label class="full">이미지 업로드<input type="file" id="imageInput" accept="image/*" /></label>
-        <label>OCR 공급자
-          <select name="ocrProvider"><option value="vision">Google Vision</option><option value="rekognition">AWS Rekognition</option></select>
-        </label>
+        <label>업로드 타입<select name="mediaType" id="mediaType"><option value="image">이미지</option><option value="video">영상</option></select></label>
+        <label>파일 업로드<input type="file" id="mediaInput" accept="image/*,video/*" /></label>
+        <label>분석 공급자<select name="visionProvider"><option value="vision">Google Vision</option><option value="rekognition">AWS Rekognition</option></select></label>
         <label>OpenAI API Key<input name="openaiApiKey" type="password" placeholder="sk-..." /></label>
-        <label>Google Vision API Key<input name="googleApiKey" type="password" placeholder="선택 사항" /></label>
-        <label>AWS Access Key<input name="awsAccessKey" type="password" placeholder="선택 사항" /></label>
-        <label>AWS Secret Key<input name="awsSecretKey" type="password" placeholder="선택 사항" /></label>
-        <label>브랜드/상품명<input name="brand" placeholder="예: 망고아트" /></label>
-        <label>업종<input name="industry" placeholder="예: 카페" /></label>
-        <label>목표 고객<input name="target" placeholder="예: 20~30대 직장인" /></label>
-        <label>캠페인 목표<input name="goal" placeholder="예: 문의 전환" /></label>
-        <label class="full">추가 지시사항<textarea name="extraInstruction" placeholder="톤, 금지어, CTA 등"></textarea></label>
-        <label class="full">OCR 추출 텍스트(수정 가능)<textarea id="ocrText" name="ocrText" placeholder="이미지 분석 결과가 여기에 자동 반영됩니다."></textarea></label>
-
+        <label>Google Vision API Key<input name="googleApiKey" type="password" placeholder="Vision 사용 시" /></label>
+        <label>AWS Access Key<input name="awsAccessKey" type="password" placeholder="Rekognition 사용 시" /></label>
+        <label>AWS Secret Key<input name="awsSecretKey" type="password" placeholder="Rekognition 사용 시" /></label>
+        <label>Runway API Key<input name="runwayApiKey" type="password" placeholder="선택 사항" /></label>
+        <label>Instagram Access Token<input name="instagramToken" type="password" placeholder="자동 게시용" /></label>
+        <label>YouTube Access Token<input name="youtubeToken" type="password" placeholder="자동 게시용" /></label>
+        <label>브랜드/상품명<input name="brand" /></label><label>업종<input name="industry" /></label><label>목표고객<input name="target" /></label><label>캠페인 목표<input name="goal" /></label>
+        <label class="full">추가 지시사항<textarea name="extraInstruction"></textarea></label>
+        <label class="full">AI 추출 핵심 정보<textarea id="insightText" name="insightText" placeholder="분석 결과(라벨/텍스트/설명)가 자동 입력됩니다."></textarea></label>
         <div class="actions">
-          <button class="ghost" type="button" id="analyzeBtn">OCR 분석</button>
-          <button class="primary" type="submit">콘텐츠 생성</button>
-          <button class="ghost" type="button" id="saveBtn">저장하기</button>
-          <button class="ghost" type="button" id="copyAllBtn">전체 복사</button>
+          <button id="analyzeBtn" class="ghost" type="button">AI 분석</button><button class="primary" type="submit">콘텐츠 생성</button><button id="makeImageBtn" class="ghost" type="button">이미지 생성</button><button id="publishBtn" class="ghost" type="button">자동 게시</button><button id="saveBtn" class="ghost" type="button">저장/재활용</button>
         </div>
       </form>
 
       <section id="preview" class="card"></section>
       <section id="results"></section>
-      <section class="card"><div class="cardHeader"><h2>저장된 자산</h2><button id="clearSavedBtn" class="ghost" type="button">전체 삭제</button></div><div id="savedList" class="savedGrid"></div></section>
+      <section class="card"><div class="cardHeader"><h2>저장된 콘텐츠</h2><button id="clearSavedBtn" class="ghost" type="button">전체 삭제</button></div><div id="savedList" class="savedGrid"></div></section>
     </main>
     <div id="toast" class="toast"></div>
 
     <script>
-      const STORAGE_KEY = 'mangoart_ai_assets_v1';
-      let imageBase64 = ''; let currentContent = null;
-      const $ = (id) => document.getElementById(id);
-      const toast = (msg) => { const t=$('toast'); t.textContent=msg; t.classList.add('show'); clearTimeout(toast.timer); toast.timer=setTimeout(()=>t.classList.remove('show'),1200); };
+      const STORAGE_KEY='mangoart_assets_v2'; let mediaBase64=''; let mediaMime=''; let mediaName=''; let currentContent=null;
+      const $=(id)=>document.getElementById(id); const toast=(m)=>{const t=$('toast');t.textContent=m;t.classList.add('show');clearTimeout(toast.timer);toast.timer=setTimeout(()=>t.classList.remove('show'),1300)};
+      $('mediaInput').addEventListener('change',(e)=>{const f=e.target.files?.[0];if(!f)return;mediaMime=f.type;mediaName=f.name;const r=new FileReader();r.onload=()=>{mediaBase64=String(r.result).split(',')[1]||'';$('preview').innerHTML=`<h3>업로드 미리보기</h3>${mediaMime.startsWith('video')?`<video class='thumb' controls src='${r.result}'></video>`:`<img class='thumb' src='${r.result}'/>`}<p class='desc'>${f.name}</p>`};r.readAsDataURL(f)});
 
-      $('imageInput').addEventListener('change', (e) => {
-        const file = e.target.files[0]; if (!file) return;
-        const reader = new FileReader();
-        reader.onload = () => { imageBase64 = String(reader.result).split(',')[1] || ''; $('preview').innerHTML = `<h3>업로드 미리보기</h3><img class="thumb" src="${reader.result}" alt="업로드 이미지"/>`; };
-        reader.readAsDataURL(file);
-      });
-
-      async function runOcr(provider, form) {
-        if (!imageBase64) throw new Error('이미지를 먼저 업로드해 주세요.');
-        if (provider === 'vision') {
-          if (!form.googleApiKey) throw new Error('Google Vision API Key를 입력해 주세요.');
-          const res = await fetch(`https://vision.googleapis.com/v1/images:annotate?key=${form.googleApiKey}`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({requests:[{image:{content:imageBase64},features:[{type:'TEXT_DETECTION'}]}]}) });
-          const data = await res.json();
-          return data.responses?.[0]?.fullTextAnnotation?.text || '텍스트 미검출';
-        }
-        throw new Error('AWS Rekognition은 브라우저 직접 호출 제한으로 데모에서는 미지원입니다. Google Vision을 사용해 주세요.');
+      async function runVision(form){
+        if(!form.googleApiKey)throw new Error('Google Vision API Key 필요');
+        if(mediaMime.startsWith('video')) return '영상 파일은 Google Vision 직접 분석이 제한됩니다. 핵심 장면 이미지 캡처 후 업로드하거나 Rekognition/Runway 분석을 사용하세요.';
+        const res=await fetch(`https://vision.googleapis.com/v1/images:annotate?key=${form.googleApiKey}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({requests:[{image:{content:mediaBase64},features:[{type:'TEXT_DETECTION'},{type:'LABEL_DETECTION'},{type:'OBJECT_LOCALIZATION'}]}]})});
+        const d=await res.json(); const r=d.responses?.[0]||{};
+        const labels=(r.labelAnnotations||[]).slice(0,8).map(x=>x.description).join(', '); const text=r.fullTextAnnotation?.text||'텍스트 없음';
+        return `라벨: ${labels}\nOCR: ${text}`;
       }
 
-      async function generateContent(form) {
-        if (!form.openaiApiKey) throw new Error('OpenAI API Key를 입력해 주세요.');
-        const prompt = `다음 정보를 기반으로 한국어 마케팅 콘텐츠 JSON만 생성해줘.\n브랜드:${form.brand}\n업종:${form.industry}\n타겟:${form.target}\n목표:${form.goal}\nOCR:${form.ocrText}\n추가:${form.extraInstruction}\n필드: blog_title, blog_body, instagram_post, youtube_description, image_prompt, video_storyboard(배열5개).`;
-        const res = await fetch('https://api.openai.com/v1/chat/completions', {
-          method:'POST', headers:{'Content-Type':'application/json','Authorization':`Bearer ${form.openaiApiKey}`},
-          body: JSON.stringify({ model:'gpt-4o-mini', messages:[{role:'system',content:'너는 퍼포먼스 마케터다. 결과는 JSON만.'},{role:'user',content:prompt}], temperature:0.8 })
-        });
-        const data = await res.json();
-        const raw = data.choices?.[0]?.message?.content || '{}';
-        return JSON.parse(raw.replace(/```json|```/g,''));
+      async function runRekognition(){return '브라우저 단독 환경에서는 AWS SigV4 서명 필요로 데모 제한. 서버에서 Rekognition DetectLabels/DetectText/StartLabelDetection 연동 권장.'}
+
+      async function generateContent(form){
+        const prompt=`아래 입력을 바탕으로 한국어 JSON만 출력해라.\n브랜드:${form.brand}\n업종:${form.industry}\n타겟:${form.target}\n목표:${form.goal}\n핵심정보:${form.insightText}\n추가:${form.extraInstruction}\n필드: blog_title, blog_body, instagram_post, youtube_description, image_prompt, video_prompt, youtube_script, reel_script, hashtags(배열10개)`;
+        const res=await fetch('https://api.openai.com/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json',Authorization:`Bearer ${form.openaiApiKey}`},body:JSON.stringify({model:'gpt-4',messages:[{role:'system',content:'너는 마케팅 콘텐츠 자동화 엔진이다. JSON만 출력.'},{role:'user',content:prompt}],temperature:0.8})});
+        const d=await res.json(); const raw=d.choices?.[0]?.message?.content||'{}'; return JSON.parse(raw.replace(/```json|```/g,''));
       }
 
-      function renderResults(c) {
-        currentContent = c;
-        const blocks = [['블로그 제목', c.blog_title], ['블로그 본문', c.blog_body], ['인스타그램 게시글', c.instagram_post], ['유튜브 설명', c.youtube_description], ['이미지 생성 프롬프트', c.image_prompt], ['영상 스토리보드(5컷)', (c.video_storyboard||[]).map((v,i)=>`${i+1}. ${v}`).join('\n')]];
-        $('results').innerHTML = blocks.map(([t,v]) => `<section class="card"><div class="cardHeader"><h3>${t}</h3><button class="copyBtn" type="button" onclick='copyBlock(${JSON.stringify(String(v||'')).replace(/'/g,"&#39;")})'>복사</button></div><pre>${String(v||'')}</pre></section>`).join('');
+      async function generateImage(form){
+        if(!currentContent?.image_prompt) throw new Error('먼저 콘텐츠 생성 필요');
+        const res=await fetch('https://api.openai.com/v1/images/generations',{method:'POST',headers:{'Content-Type':'application/json',Authorization:`Bearer ${form.openaiApiKey}`},body:JSON.stringify({model:'dall-e-2',prompt:currentContent.image_prompt,size:'1024x1024',n:1})});
+        const d=await res.json(); return d.data?.[0]?.url||'';
       }
-      window.copyBlock = async (txt) => { await navigator.clipboard.writeText(txt); toast('복사 완료'); };
 
-      $('analyzeBtn').addEventListener('click', async () => {
-        try {
-          const fd = Object.fromEntries(new FormData($('contentForm')).entries());
-          $('ocrText').value = await runOcr(fd.ocrProvider, fd); toast('OCR 분석 완료');
-        } catch (e) { toast(e.message); }
-      });
-
-      $('contentForm').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        try { const fd = Object.fromEntries(new FormData($('contentForm')).entries()); const c = await generateContent(fd); renderResults(c); toast('콘텐츠 생성 완료'); }
-        catch (err) { toast('생성 실패: ' + err.message); }
-      });
-
-      function saved() { try { return JSON.parse(localStorage.getItem(STORAGE_KEY)||'[]'); } catch { return []; } }
-      function persist(list) { localStorage.setItem(STORAGE_KEY, JSON.stringify(list)); }
-      function renderSaved() {
-        const list = saved();
-        $('savedList').innerHTML = list.length ? list.map(x=>`<article class='savedItem'><p>${x.time} | ${x.brand} | ${x.industry}</p><button class='ghost' onclick='reuse(${x.id})'>재활용</button></article>`).join('') : '<p>저장된 콘텐츠가 없습니다.</p>';
+      function renderResults(c){
+        currentContent=c;
+        const ig=`[인스타 포맷]\n${c.instagram_post}\n\n${(c.hashtags||[]).map(x=>`#${x.replace('#','')}`).join(' ')}`;
+        const yt=`[유튜브 포맷]\n제목: ${c.blog_title}\n설명: ${c.youtube_description}\n스크립트: ${c.youtube_script||''}`;
+        const blog=`[블로그 포맷]\n제목: ${c.blog_title}\n본문:\n${c.blog_body}`;
+        const blocks=[['블로그',blog],['인스타그램',ig],['유튜브',yt],['DALL·E 프롬프트',c.image_prompt],['Runway 영상 프롬프트',c.video_prompt],['릴스 스크립트',c.reel_script||'']];
+        $('results').innerHTML=blocks.map(([t,v])=>`<section class='card'><div class='cardHeader'><h3>${t}</h3><button class='copyBtn' onclick='copyBlock(${JSON.stringify(String(v||'')).replace(/'/g,"&#39;")})'>복사</button></div><pre>${String(v||'')}</pre></section>`).join('') + `<section class='card'><h3>자동 게시/다운로드 가이드</h3><pre>• Instagram Graph API: /media -> /media_publish\n• YouTube Data API videos.insert\n• Runway API: 아래 video_prompt로 Text-to-Video 생성\n• 필요 시 JSON 전체 다운로드 버튼으로 보관</pre><button class='ghost' onclick='downloadCurrent()'>JSON 다운로드</button></section>`;
       }
-      window.reuse = (id) => {
-        const item = saved().find(x=>x.id===id); if (!item) return;
-        Object.entries(item.form).forEach(([k,v])=>{ if ($('contentForm').elements[k]) $('contentForm').elements[k].value=v; });
-        $('ocrText').value = item.form.ocrText || ''; renderResults(item.content); toast('저장 콘텐츠 재활용 완료');
-      };
+      window.copyBlock=async(t)=>{await navigator.clipboard.writeText(t);toast('복사 완료')};
+      window.downloadCurrent=()=>{if(!currentContent)return;const blob=new Blob([JSON.stringify(currentContent,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`mangoart-content-${Date.now()}.json`;a.click();URL.revokeObjectURL(a.href)};
 
-      $('saveBtn').addEventListener('click', () => {
-        if (!currentContent) return toast('먼저 콘텐츠를 생성해 주세요.');
-        const form = Object.fromEntries(new FormData($('contentForm')).entries());
-        const list = saved(); list.unshift({ id: Date.now(), time: new Date().toISOString().slice(0,16).replace('T',' '), brand: form.brand || '브랜드', industry: form.industry || '업종', form, content: currentContent });
-        persist(list.slice(0,50)); renderSaved(); toast('저장 완료');
-      });
-      $('copyAllBtn').addEventListener('click', async () => {
-        if (!currentContent) return toast('먼저 콘텐츠를 생성해 주세요.');
-        await navigator.clipboard.writeText(JSON.stringify(currentContent, null, 2)); toast('전체 복사 완료');
-      });
-      $('clearSavedBtn').addEventListener('click', () => { localStorage.removeItem(STORAGE_KEY); renderSaved(); toast('전체 삭제 완료'); });
-      renderSaved(); $('preview').innerHTML='<p class="desc">업로드한 이미지가 이 영역에 표시됩니다.</p>';
+      $('analyzeBtn').addEventListener('click',async()=>{try{if(!mediaBase64)throw new Error('파일 업로드 필요');const f=Object.fromEntries(new FormData($('contentForm')).entries());$('insightText').value=f.visionProvider==='vision'?await runVision(f):await runRekognition(f);toast('핵심 정보 추출 완료')}catch(e){toast(e.message)}});
+      $('contentForm').addEventListener('submit',async(e)=>{e.preventDefault();try{const f=Object.fromEntries(new FormData($('contentForm')).entries());if(!f.openaiApiKey)throw new Error('OpenAI API Key 필요');const c=await generateContent(f);renderResults(c);toast('텍스트/포맷 생성 완료')}catch(e){toast('생성 실패: '+e.message)}});
+      $('makeImageBtn').addEventListener('click',async()=>{try{const f=Object.fromEntries(new FormData($('contentForm')).entries());const img=await generateImage(f);if(!img)throw new Error('이미지 URL 응답 없음');$('results').insertAdjacentHTML('afterbegin',`<section class='card'><h3>생성 이미지</h3><img class='thumb' src='${img}'/><pre>${img}</pre></section>`);currentContent.generated_image_url=img;toast('DALL·E 이미지 생성 완료')}catch(e){toast('이미지 생성 실패: '+e.message)}});
+      $('publishBtn').addEventListener('click',()=>{if(!currentContent)return toast('먼저 콘텐츠 생성');toast('자동 게시 요청 준비 완료(토큰 연동 시 API 호출 가능)')});
+
+      function saved(){try{return JSON.parse(localStorage.getItem(STORAGE_KEY)||'[]')}catch{return[]}} function persist(l){localStorage.setItem(STORAGE_KEY,JSON.stringify(l))}
+      function renderSaved(){const l=saved();$('savedList').innerHTML=l.length?l.map(x=>`<article class='savedItem'><p>${x.time} | ${x.brand}</p><button class='ghost' onclick='reuse(${x.id})'>재활용</button></article>`).join(''):'<p>저장된 항목이 없습니다.</p>'}
+      window.reuse=(id)=>{const item=saved().find(x=>x.id===id);if(!item)return;Object.entries(item.form).forEach(([k,v])=>{if($('contentForm').elements[k])$('contentForm').elements[k].value=v});$('insightText').value=item.form.insightText||'';currentContent=item.content;renderResults(currentContent);toast('재활용 완료')};
+      $('saveBtn').addEventListener('click',()=>{if(!currentContent)return toast('먼저 콘텐츠 생성');const form=Object.fromEntries(new FormData($('contentForm')).entries());const l=saved();l.unshift({id:Date.now(),time:new Date().toISOString().slice(0,16).replace('T',' '),brand:form.brand||'브랜드',mediaName,form,content:currentContent});persist(l.slice(0,70));renderSaved();toast('저장 완료')});
+      $('clearSavedBtn').addEventListener('click',()=>{localStorage.removeItem(STORAGE_KEY);renderSaved();toast('전체 삭제')});
+      renderSaved();$('preview').innerHTML='<p class="desc">이미지/영상 업로드 시 미리보기가 표시됩니다.</p>';
     </script>
   </body>
 </html>
