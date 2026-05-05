@@ -450,9 +450,10 @@
           const btns = document.createElement('div'); btns.className = 'savedBtns';
           const regen = document.createElement('button'); regen.className = 'ghost'; regen.textContent = '다시 생성';
           regen.addEventListener('click', () => {
-            fillForm(entry.content.form);
+            const nextForm = { ...(entry.content?.form || {}), contentStyle: styleSelect.value };
+            fillForm(nextForm);
             makeContent();
-            showToast('저장 사례로 다시 생성했습니다.');
+            showToast('선택한 스타일로 다시 생성했습니다.');
           });
           const del = document.createElement('button'); del.className = 'danger'; del.textContent = '삭제';
           del.addEventListener('click', () => { setSaved(getSaved().filter((x) => x.id !== entry.id)); renderSavedList(); showToast('삭제 완료'); });
@@ -467,16 +468,15 @@
             styleSelect.appendChild(option);
           });
           styleSelect.value = entry.content?.form?.contentStyle || 'default';
-          const styleBtn = document.createElement('button');
-          styleBtn.className = 'primary';
-          styleBtn.textContent = '스타일 변경';
-          styleBtn.addEventListener('click', () => {
-            const nextForm = { ...(entry.content?.form || {}), contentStyle: styleSelect.value };
-            fillForm(nextForm);
-            makeContent();
-            showToast('스타일 변경 후 재생성 완료');
+          styleSelect.addEventListener('change', () => {
+            const listNow = getSaved();
+            const idx = listNow.findIndex((x) => x.id === entry.id);
+            if (idx < 0) return;
+            listNow[idx].content.form.contentStyle = styleSelect.value;
+            setSaved(listNow);
+            showToast('스타일 선택이 저장되었습니다.');
           });
-          styleRow.append(styleSelect, styleBtn);
+          styleRow.append(styleSelect);
 
           card.append(meta, btns, styleRow); root.appendChild(card);
         });
