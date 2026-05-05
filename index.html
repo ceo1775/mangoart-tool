@@ -70,12 +70,23 @@
       .full { grid-column: 1 / -1; }
 
       .actions { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; grid-column: 1 / -1; }
+      .sampleActions {
+        display: grid;
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+        gap: 8px;
+        margin-top: 12px;
+      }
       button {
         border: 0; border-radius: 10px; padding: 11px; font-size: 14px; font-weight: 800; cursor: pointer;
       }
       .primary { color: #fff; background: linear-gradient(120deg, var(--mango-500), var(--mango-400)); }
       .ghost { color: #8a4e00; background: #fff8e6; border: 1px solid #efc97a; }
       .danger { color: #fff; background: var(--danger); }
+      .sampleBtn {
+        background: #ffd35d;
+        color: #6e3d00;
+        border: 1px solid #efc97a;
+      }
 
       .cardHeader { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 10px; }
       h2,h3 { margin: 0; }
@@ -107,9 +118,11 @@
 
       @media (max-width: 900px) {
         .actions { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        .sampleActions { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       }
       @media (max-width: 768px) {
         .formGrid, .savedGrid, .flow { grid-template-columns: 1fr; }
+        .sampleActions { grid-template-columns: 1fr; }
       }
     </style>
   </head>
@@ -123,6 +136,13 @@
           <div class="flowStep">콘텐츠 생성</div>
           <div class="flowStep">저장</div>
           <div class="flowStep">업로드</div>
+        </div>
+        <div class="sampleActions" aria-label="샘플 자동 입력 버튼">
+          <button class="sampleBtn" type="button" data-sample-key="cafePop">카페 POP 샘플</button>
+          <button class="sampleBtn" type="button" data-sample-key="deliverySticker">배달 스티커 샘플</button>
+          <button class="sampleBtn" type="button" data-sample-key="corpBanner">기업 배너 샘플</button>
+          <button class="sampleBtn" type="button" data-sample-key="hospitalNotice">병원 안내문 샘플</button>
+          <button class="sampleBtn" type="button" data-sample-key="photoCard">포토카드 샘플</button>
         </div>
       </header>
 
@@ -167,6 +187,28 @@
         customerName: '고객사 담당자', item: '맞춤 제작물', industry: '일반 업종', region: '우리 지역',
         usagePurpose: '상담 전환 확대', phone: '010-0000-0000', customerProblem: '고객 유입이 정체된 상황',
         productionDetail: '브랜드 맞춤형 디자인 제작', highlightPoint: '전환을 만드는 핵심 포인트 반영', kakaoChannel: '카카오채널 @망고아트'
+      };
+      const sampleDataMap = {
+        cafePop: {
+          item: '카페 메뉴 POP', industry: '카페', customerProblem: '메뉴가 눈에 잘 안 보이고 주문 유도가 약함',
+          productionDetail: 'A3 메뉴판 디자인 및 출력 제작', highlightPoint: '한눈에 보이는 메뉴 구성 + 매장 분위기 맞춤 디자인', region: '파주'
+        },
+        deliverySticker: {
+          item: '배달 포장 스티커', industry: '음식점', customerProblem: '브랜드 인식 부족',
+          productionDetail: '로고 스티커 제작', highlightPoint: '포장 시 자연스럽게 브랜드 노출', region: '운정'
+        },
+        corpBanner: {
+          item: '홍보 배너', industry: '기업', customerProblem: '전시에서 눈에 띄지 않음',
+          productionDetail: 'X배너 디자인 및 출력', highlightPoint: '시선 집중 + 메시지 전달력', region: '일산'
+        },
+        hospitalNotice: {
+          item: '안내 POP', industry: '병원', customerProblem: '안내가 명확하지 않음',
+          productionDetail: '진료 안내 POP 제작', highlightPoint: '신뢰감 + 가독성', region: '파주'
+        },
+        photoCard: {
+          item: '포토카드', industry: '개인', customerProblem: '특별한 굿즈 제작',
+          productionDetail: '포토카드 디자인 및 인쇄', highlightPoint: '감성 + 소장 가치', region: '서울'
+        }
       };
 
       function normalize(form) {
@@ -382,10 +424,25 @@
         });
       }
 
+      function makeContent() {
+        const formEl = document.getElementById('contentForm');
+        const fd = new FormData(formEl);
+        renderResults(buildContent(Object.fromEntries(fd.entries())));
+      }
+
       document.getElementById('contentForm').addEventListener('submit', function (e) {
         e.preventDefault();
-        const fd = new FormData(e.target);
-        renderResults(buildContent(Object.fromEntries(fd.entries())));
+        makeContent();
+      });
+
+      document.querySelectorAll('[data-sample-key]').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const sample = sampleDataMap[btn.dataset.sampleKey];
+          if (!sample) return;
+          fillForm(sample);
+          makeContent();
+          showToast(btn.textContent + ' 자동 입력 완료');
+        });
       });
 
       document.getElementById('copyAllBtn').addEventListener('click', () => {
